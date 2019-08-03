@@ -115,15 +115,15 @@ class GeneParser(TSVParser):
                 'length': 15,
             },
             {
-                'column': 'Approved Name',
+                'column': 'Approved name',
                 'field': 'name',
             },
             {
-                'column': 'Approved Symbol',
+                'column': 'Approved symbol',
                 'field': 'alt_id',
             },
             {
-                'column': 'Previous Symbols',
+                'column': 'Previous symbols',
                 'field': 'alt_id',
                 'delimiter': ', ',
             },
@@ -133,7 +133,7 @@ class GeneParser(TSVParser):
                 'delimiter': ', ',
             },
             {
-                'column': 'Entrez Gene ID(supplied by NCBI)',
+                'column': 'NCBI Gene ID(supplied by NCBI)',
                 'field': 'alt_id',
                 'prefix': 'NCBIGene',
             },

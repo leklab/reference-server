@@ -60,7 +60,8 @@ EXAMPLE_REQUEST = {
 class ElasticSearchTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.es = Elasticsearch()
+        #cls.es = Elasticsearch()
+        cls.es = Elasticsearch([{'host': '172.23.118.149', 'port': 9200}])
 
     # Unittest test backwards compatibility to Python 2.X
     try:
@@ -69,12 +70,14 @@ class ElasticSearchTests(TestCase):
         assertCountEqual = TestCase.assertItemsEqual
 
     def test_patient_indexed(self):
-        record = self.es.get(index='patients', id='P0001135')
+#        record = self.es.get(index='patients', id='P0001135')
+        record = self.es.get(index='patients', doc_type='patient', id='P0001135')
         self.assertTrue(record['found'])
         self.assertCountEqual(record['_source']['gene'], ['ENSG00000151092'])  # NGLY1
 
     def test_hpo_indexed(self):
-        term = self.es.get(index='vocabularies', doc_type='hpo', id='HP:0000252')
+#        term = self.es.get(index='vocabularies', doc_type='hpo', id='HP:0000252')
+        term = self.es.get(index='vocabularies', doc_type='_doc', id='HP:0000252')
         self.assertTrue(term['found'])
         doc = term['_source']
         self.assertEqual(doc['name'], ['Microcephaly'])
@@ -86,7 +89,7 @@ class ElasticSearchTests(TestCase):
     def test_gene_filter(self):
         query = {
             'query': {
-                'filtered': {
+                'bool': {
                     'filter': {
                         'term': {
                             'gene': 'ENSG00000151092',  # NGLY1
@@ -101,7 +104,7 @@ class ElasticSearchTests(TestCase):
     def test_phenotype_filter(self):
         query = {
             'query': {
-                'filtered': {
+                'bool': {
                     'filter': {
                         'term': {
                             'phenotype': 'HP:0000118'

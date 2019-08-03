@@ -19,63 +19,120 @@ GENE_DOC_TYPE = 'gene'
 class VocabularyManager(BaseManager):
     NAME = 'vocabularies'
     DOC_TYPES = [HPO_DOC_TYPE, GENE_DOC_TYPE]
+
+    CONFIG = {
+        'settings': {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+	},
+        'mappings': {
+            '_doc': {
+                '_all': {
+                    'enabled': False,
+                },
+                'properties': {
+                    'type': {
+                        'type': 'keyword',
+#                        'index': True,
+                    },
+                    'id': {
+                        'type': 'keyword',
+#                        'index': True,
+                    },
+                    'name': {
+                        'type': 'keyword',
+                    },
+                    'synonym': {
+                        'type': 'keyword',
+                    },
+                    'alt_id': {
+                        'type': 'keyword',
+ #                       'index': True,
+                    },
+                    'is_a': {
+                        'type': 'keyword',
+#                        'index': True,
+                    },
+                    'term_category': {
+                        'type': 'keyword',
+#                        'index': True,
+                    }
+                }
+            }
+        }
+    }
+
     TERM_CONFIG = {
         '_all': {
             'enabled': False,
         },
         'properties': {
             'id': {
-                'type': 'string',
-                'index': 'not_analyzed',
+                'type': 'keyword',
+                'index': False,
+#                'type': 'string',
+#                'index': 'not_analyzed',
             },
             'name': {
-                'type': 'string',
+                'type': 'keyword',
+#                'type': 'string',
             },
             'synonym': {
-                'type': 'string',
+                'type': 'keyword',
+#                'type': 'string',
             },
             'alt_id': {
-                'type': 'string',
-                'index': 'not_analyzed',
+                'type': 'keyword',
+                'index': False,
+#                'type': 'string',
+#                'index': 'not_analyzed',
             },
             'is_a': {
-                'type': 'string',
-                'index': 'not_analyzed',
+                'type': 'keyword',
+                'index': False,
+#                'type': 'string',
+#                'index': 'not_analyzed',
             },
             'term_category': {
-                'type': 'string',
-                'index': 'not_analyzed',
+                'type': 'keyword',
+                'index': False,
+#                'type': 'string',
+#                'index': 'not_analyzed',
             },
         }
     }
 
-    def get_config(self):
+#    def get_config(self):
         # Create a separate doc_type for each ontology
-        mappings = {}
-        for doc_type in self.DOC_TYPES:
-            mappings[doc_type] = self.TERM_CONFIG
+#        mappings = {}
+#        for doc_type in self.DOC_TYPES:
+#            mappings[doc_type] = self.TERM_CONFIG
 
-        return {
-            'mappings': mappings
-        }
+#        return {
+#            'mappings': mappings
+#        }
 
     def index_terms(self, doc_type, terms, **kwargs):
         commands = []
         for term in terms:
             id = term['id']
             command = [
-                {'index': {'_index': self.get_name(), '_type': doc_type, '_id': id}},
+#                {'index': {'_index': self.get_name(), '_type': doc_type, '_id': id}},
+                {'index': {'_index': self.get_name(), '_type': '_doc', '_id': id}},
                 term,
             ]
+	    print(command)
             commands.extend(command)
 
         if commands:
             data = ''.join([json.dumps(command) + '\n' for command in commands])
             self.bulk(data, **kwargs)
 
-    def iter_batches(self, iterator, batch_size):
+    def iter_batches(self, doc_type, iterator, batch_size):
         batch = []
         for item in iterator:
+	    #print(item)
+	    item['type'] = doc_type
             batch.append(item)
             if len(batch) >= batch_size:
                 yield batch
@@ -94,7 +151,7 @@ class VocabularyManager(BaseManager):
         parser = Parser(filename)
 
         logger.info("Parsing vocabulary from: {!r}".format(filename))
-        for batch in self.iter_batches(parser, batch_size=batch_size):
+        for batch in self.iter_batches(doc_type,parser, batch_size=batch_size):
             self.index_terms(doc_type, batch, refresh=False)
 
     def index_hpo(self, filename, doc_type=HPO_DOC_TYPE):

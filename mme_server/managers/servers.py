@@ -19,41 +19,27 @@ class ServerManager(BaseManager):
     SERVER_DISPLAY_FIELDS = ['server_id', 'server_label', 'base_url']
     CLIENT_DISPLAY_FIELDS = ['server_id', 'server_label']
     CONFIG = {
+        'settings': {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+        },
         'mappings': {
-            'server': {
+            '_doc': {
                 'properties': {
+                    'type': {
+                        'type': 'text',
+                    },
                     'server_id': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'text',
                     },
                     'server_label': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'text',
                     },
                     'server_key': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'text',
                     },
                     'base_url': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
-                    }
-                }
-            },
-
-            'client': {
-                'properties': {
-                    'server_id': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
-                    },
-                    'server_label': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
-                    },
-                    'server_key': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'text',
                     }
                 }
             }

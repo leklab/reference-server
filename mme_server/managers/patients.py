@@ -16,21 +16,27 @@ logger = logging.getLogger(__name__)
 
 class PatientManager(BaseManager):
     NAME = 'patients'
-    DOC_TYPE = 'patient'
+#    DOC_TYPE = 'patient'
+    DOC_TYPE = '_doc'
     CONFIG = {
+        'settings': {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+        },
         'mappings': {
-            'patient': {
+            '_doc': {
+#            'patient': {
                 '_all': {
                     'enabled': False,
                 },
                 'properties': {
                     'phenotype': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'keyword',
+#                        'index': 'not_analyzed',
                     },
                     'gene': {
-                        'type': 'string',
-                        'index': 'not_analyzed',
+                        'type': 'keyword',
+#                        'index': 'not_analyzed',
                     },
                     'doc': {
                         'type': 'object',

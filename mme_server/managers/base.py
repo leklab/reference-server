@@ -41,6 +41,8 @@ class BaseManager:
 
     def create_index(self):
         logger.info("Creating ElasticSearch index: {!r}".format(self.get_name()))
+	print("creating '%s' index..." % (self.get_name()))
+	print("Body: %s" % (self.get_config()))
         return self.get_db().indices.create(index=self.get_name(), body=self.get_config())
 
     def index_exists(self):
@@ -68,10 +70,14 @@ class BaseManager:
         # Ensure the index exists
         self.ensure_index_exists()
 
-        doc_type = kwargs.get('doc_type')
-        if not doc_type:
-            kwargs['doc_type'] = self.get_default_doc_type()
+        #doc_type = kwargs.get('doc_type')
+	doc['type'] = kwargs.get('doc_type')
+	kwargs['doc_type'] = '_doc'
+
+        #if not doc_type:
+        #    kwargs['doc_type'] = self.get_default_doc_type()
         kwargs.setdefault('index', self.get_name())
+
         return self.get_db().index(body=doc, **kwargs)
 
     def delete(self, id, **kwargs):

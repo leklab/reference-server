@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 def get_backend():
     backend = getattr(flask.g, '_mme_backend', None)
     if backend is None:
-        backend = flask.g._mme_backend = Managers(Elasticsearch())
+#        backend = flask.g._mme_backend = Managers(Elasticsearch())
+        backend = flask.g._mme_backend = Managers(Elasticsearch([{'host': 'localhost', 'port': 9200}]))
 
     return backend

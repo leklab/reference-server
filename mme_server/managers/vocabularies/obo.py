@@ -29,6 +29,9 @@ __version__ = "0.1"
 __all__ = ["ParseError", "Stanza", "Parser", "Value"]
 
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 import re
 import tokenize
 import logging
